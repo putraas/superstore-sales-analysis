@@ -31,4 +31,4 @@ Repositori ini berisi proyek analisis data komprehensif (*End-to-End Data Analys
 2. Pastikan pustaka Python terinstal (`pandas`, `matplotlib`, `seaborn`, `openpyxl`).
 3. Jalankan script Python:
    ```bash
-   python sales_analysis.py
+   sales_analysis.py
