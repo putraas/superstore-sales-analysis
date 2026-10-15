@@ -1,0 +1,52 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+# Atur tema visualisasi
+sns.set_theme(style="whitegrid")
+
+print("--- 1. LOADING DATA ---")
+df = pd.read_excel("Sales Data.xlsx", sheet_name="DATA")
+print(f"Total Baris & Kolom: {df.shape}")
+
+print("\n--- 2. DATA CLEANING & VALIDATION ---")
+# Cek missing values & duplikat
+print("Missing values:", df.isnull().sum().sum())
+print("Duplicate rows:", df.duplicated().sum())
+df = df.drop_duplicates()
+
+# Konversi tanggal
+df["Order Date"] = pd.to_datetime(df["Order Date"])
+df["Ship Date"] = pd.to_datetime(df["Ship Date"])
+
+print("\n--- 3. FEATURE ENGINEERING & AGGREGATION ---")
+df["Order_Year"] = df["Order Date"].dt.year
+df["Order_Month_Year"] = df["Order Date"].dt.to_period("M").astype(str)
+
+total_sales = df["Sales"].sum()
+total_profit = df["Profit"].sum()
+overall_margin = (total_profit / total_sales) * 100
+
+print(f"Total Sales: ${total_sales:,.2f}")
+print(f"Total Profit: ${total_profit:,.2f}")
+print(f"Overall Profit Margin: {overall_margin:.2f}%")
+
+# Ringkasan Kategori
+category_summary = (
+    df.groupby("Category")
+    .agg(
+        Total_Sales=("Sales", "sum"),
+        Total_Profit=("Profit", "sum"),
+        Total_Quantity=("Quantity", "sum"),
+    )
+    .reset_index()
+)
+print("\nRingkasan Kategori:\n", category_summary)
+
+print("\n--- 4. VISUALIZATION ---")
+plt.figure(figsize=(12, 6))
+sns.barplot(data=category_summary, x="Category", y="Total_Sales", palette="Blues_d", hue="Category", legend=False)
+plt.title("Total Sales by Category")
+plt.savefig("sales_by_category.png")
+plt.close()
+print("Grafik berhasil disimpan sebagai 'sales_by_category.png'.")
